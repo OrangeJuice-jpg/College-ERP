@@ -1,0 +1,19 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared package for Vaish College of Engineering ERP system",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "jest": "^27.0.6",
+    "@types/jest": "^27.0.2"
+  },
+  "keywords": [],
+  "author": "Vaish College of Engineering",
+  "license": "MIT"
+}
