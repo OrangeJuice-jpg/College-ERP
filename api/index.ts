@@ -348,13 +348,13 @@ router.delete('/finance/:id', authenticate, (req: Request, res: Response) => {
 router.get('/attendance/my', authenticate, (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
   const student = students.find(s => s.userId === userId);
-  if (!student) return res.status(404).json({ message: 'No student record found for your account' });
+  if (!student) return res.status(200).json([]); // admin/faculty have no personal attendance
   res.status(200).json(attendanceRecords.filter(r => r.studentId === student.id));
 });
 router.get('/attendance/my-stats', authenticate, (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
   const student = students.find(s => s.userId === userId);
-  if (!student) return res.status(404).json({ message: 'No student record found for your account' });
+  if (!student) return res.status(200).json({ total: 0, present: 0, absent: 0, late: 0, attendancePercentage: 0 });
   const myRecords = attendanceRecords.filter(r => r.studentId === student.id);
   const total = myRecords.length;
   const present = myRecords.filter(r => r.status === 'present').length;
@@ -396,11 +396,19 @@ router.delete('/attendance/:id', authenticate, (req: Request, res: Response) => 
 /* ─── Timetable Routes ─── */
 router.get('/timetable/my', authenticate, (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
+  const role = (req as any).user?.role;
   const student = students.find(s => s.userId === userId);
-  if (!student) return res.status(404).json({ message: 'No student record found for your account' });
-  const myTimetable = timetableEntries.filter(e => e.department === student.department && e.semester === student.semester);
+
+  // For admin/faculty with no student record, return full timetable
+  const entries = student
+    ? timetableEntries.filter(e => e.department === student.department && e.semester === student.semester)
+    : timetableEntries;
+
   const timetableByDay: Record<string, typeof timetableEntries> = {};
-  myTimetable.forEach(entry => { if (!timetableByDay[entry.day]) timetableByDay[entry.day] = []; timetableByDay[entry.day].push(entry); });
+  entries.forEach(entry => {
+    if (!timetableByDay[entry.day]) timetableByDay[entry.day] = [];
+    timetableByDay[entry.day].push(entry);
+  });
   res.status(200).json(timetableByDay);
 });
 router.get('/timetable', authenticate, (_req: Request, res: Response) => {
