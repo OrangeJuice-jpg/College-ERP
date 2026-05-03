@@ -432,7 +432,11 @@ router.post('/notices', authenticate, (req: Request, res: Response) => {
 /* ─── Health ─── */
 app.get('/health', (_req, res) => res.json({ status: 'ok', message: 'Vaish ERP Server running' }));
 
+// Mount at both paths: /api for local dev, / for Vercel (which forwards the full path)
 app.use('/api', router);
-app.use((_req, res) => res.status(404).json({ message: 'Route not found' }));
+app.use('/', router);
 
-export default app;
+app.use((_req: any, res: any) => res.status(404).json({ message: 'Route not found' }));
+
+// Vercel serverless export
+module.exports = app;
