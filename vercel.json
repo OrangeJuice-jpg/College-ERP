@@ -3,8 +3,14 @@
   "installCommand": "npm install",
   "buildCommand": "cd apps/client && npm install && npm run build",
   "outputDirectory": "apps/client/dist",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

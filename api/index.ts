@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -234,12 +233,15 @@ const authenticate = (req: Request, res: Response, next: any) => {
 /* ─── Express App ─── */
 const app = express();
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
+app.use((req: any, res: any, next: any) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -432,11 +434,18 @@ router.post('/notices', authenticate, (req: Request, res: Response) => {
 /* ─── Health ─── */
 app.get('/health', (_req, res) => res.json({ status: 'ok', message: 'Vaish ERP Server running' }));
 
-// Mount at both paths: /api for local dev, / for Vercel (which forwards the full path)
+// Handle CORS preflight for all routes
+app.options('*', (req: any, res: any) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.status(200).end();
+});
+
+// Vercel passes full path e.g. /api/auth/login
 app.use('/api', router);
-app.use('/', router);
 
 app.use((_req: any, res: any) => res.status(404).json({ message: 'Route not found' }));
 
-// Vercel serverless export
+// Vercel serverless export — must be module.exports for CommonJS
 module.exports = app;
