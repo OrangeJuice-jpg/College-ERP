@@ -478,7 +478,7 @@ function Timetable() {
 
   useEffect(() => {
     const token = localStorage.getItem("vaish_token");
-    fetch("http://localhost:5000/api/timetable/my", {
+    fetch("/api/timetable/my", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
@@ -1402,7 +1402,7 @@ function Timetable() {
 
   useEffect(() => {
     const token = localStorage.getItem("vaish_token");
-    fetch("http://localhost:5000/api/timetable/my", {
+    fetch("/api/timetable/my", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
@@ -2326,7 +2326,7 @@ function Timetable() {
 
   useEffect(() => {
     const token = localStorage.getItem("vaish_token");
-    fetch("http://localhost:5000/api/timetable/my", {
+    fetch("/api/timetable/my", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
