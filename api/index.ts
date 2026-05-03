@@ -1,6 +1,5 @@
 import express from 'express';
 import { Router, Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 /* ─── Types ─── */
@@ -85,17 +84,16 @@ interface FinanceRecord {
 }
 
 /* ─── Seed Data ─── */
-const hashSync = (pw: string) => bcrypt.hashSync(pw, 10);
 
 const users: User[] = [
-  { id: 1, name: 'Admin User',    email: 'admin@vaish.edu',   password: hashSync('admin123'),   role: 'admin'   },
-  { id: 2, name: 'Dr. Priya Rao', email: 'faculty@vaish.edu', password: hashSync('faculty123'), role: 'faculty' },
-  { id: 3, name: 'Arjun Mehta',   email: 'arjun.mehta@vaish.edu',   password: hashSync('student123'), role: 'student' },
-  { id: 4, name: 'Priya Sharma',  email: 'priya.sharma@vaish.edu',  password: hashSync('student123'), role: 'student' },
-  { id: 5, name: 'Rahul Verma',   email: 'rahul.verma@vaish.edu',   password: hashSync('student123'), role: 'student' },
-  { id: 6, name: 'Sneha Iyer',    email: 'sneha.iyer@vaish.edu',    password: hashSync('student123'), role: 'student' },
-  { id: 7, name: 'Karan Patel',   email: 'karan.patel@vaish.edu',   password: hashSync('student123'), role: 'student' },
-  { id: 8, name: 'Ananya Reddy',  email: 'ananya.reddy@vaish.edu',  password: hashSync('student123'), role: 'student' },
+  { id: 1, name: 'Admin User',    email: 'admin@vaish.edu',   password: 'admin123',   role: 'admin'   },
+  { id: 2, name: 'Dr. Priya Rao', email: 'faculty@vaish.edu', password: 'faculty123', role: 'faculty' },
+  { id: 3, name: 'Arjun Mehta',   email: 'arjun.mehta@vaish.edu',   password: 'student123', role: 'student' },
+  { id: 4, name: 'Priya Sharma',  email: 'priya.sharma@vaish.edu',  password: 'student123', role: 'student' },
+  { id: 5, name: 'Rahul Verma',   email: 'rahul.verma@vaish.edu',   password: 'student123', role: 'student' },
+  { id: 6, name: 'Sneha Iyer',    email: 'sneha.iyer@vaish.edu',    password: 'student123', role: 'student' },
+  { id: 7, name: 'Karan Patel',   email: 'karan.patel@vaish.edu',   password: 'student123', role: 'student' },
+  { id: 8, name: 'Ananya Reddy',  email: 'ananya.reddy@vaish.edu',  password: 'student123', role: 'student' },
 ];
 let nextUserId = 9;
 
@@ -254,7 +252,8 @@ router.post('/auth/login', async (req: Request, res: Response) => {
     if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
     const user = users.find(u => u.email === email);
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-    const valid = await bcrypt.compare(password, user.password);
+    // Demo: plaintext compare (passwords stored as plaintext for serverless compatibility)
+    const valid = password === user.password;
     if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET, { expiresIn: '24h' });
     const studentData = user.role === 'student' ? students.find(s => s.userId === user.id) : null;
@@ -267,8 +266,7 @@ router.post('/auth/register', async (req: Request, res: Response) => {
     const { name, email, password, role } = req.body;
     if (!name || !email || !password) return res.status(400).json({ message: 'Name, email and password are required' });
     if (users.find(u => u.email === email)) return res.status(409).json({ message: 'Email already registered' });
-    const hashed = await bcrypt.hash(password, 10);
-    const user = { id: nextUserId++, name, email, password: hashed, role: role || 'student' };
+    const user = { id: nextUserId++, name, email, password, role: role || 'student' };
     users.push(user);
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET, { expiresIn: '24h' });
     const { password: _, ...safeUser } = user;
