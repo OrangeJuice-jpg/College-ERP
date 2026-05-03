@@ -1,0 +1,5 @@
+apps/server
+apps/web
+apps/client/node_modules
+infra
+*.log

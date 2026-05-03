@@ -1,6 +1,8 @@
 import { authHelpers } from './LoginPage';
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
+// On Vercel: same domain, so /api works perfectly.
+// Locally: Vite proxy forwards /api -> localhost:5000
+const API_BASE = (import.meta as any).env?.VITE_API_URL || '/api';
 
 const apiClient = {
   get: async (endpoint: string) => {
