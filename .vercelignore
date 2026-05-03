@@ -1,5 +1,6 @@
-apps/server
 apps/web
 apps/client/node_modules
+apps/server/node_modules
 infra
-*.log
+apps/server/combined.log
+apps/server/error.log

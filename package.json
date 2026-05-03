@@ -2,15 +2,10 @@
   "name": "vaish-erp",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "dev:client": "npm --workspace=apps/client run dev",
-    "dev:server": "npm --workspace=apps/server run dev",
-    "build": "cd apps/client && npm install && npm run build",
-    "start": "npm --workspace=apps/server run start"
+    "dev:client": "cd apps/client && npm run dev",
+    "dev:server": "cd apps/server && npm run dev",
+    "build": "cd apps/client && npm install && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,8 +19,6 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.0.0",
-    "typescript": "^5.3.3",
-    "eslint": "^8.54.0",
-    "prettier": "^3.1.0"
+    "typescript": "^5.3.3"
   }
 }
